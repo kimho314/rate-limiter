@@ -45,3 +45,8 @@ ratelimit:
     ENTERPRISE:
       capacity: 1000
       refill-rate: 100     # 6000 req/min steady, burst up to 1000
+
+jwt:
+  # In prod: file:/etc/secrets/public.pem (mounted by your secret manager / k8s)
+  public-key: file:./keys/public.pem
+  tier-claim: tier
