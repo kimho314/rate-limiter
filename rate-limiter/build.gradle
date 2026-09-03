@@ -21,6 +21,7 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.apache.commons:commons-pool2'
     implementation 'org.springframework.boot:spring-boot-starter-opentelemetry'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
@@ -31,6 +32,7 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.13.0'
     // Source: https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-jackson
     implementation 'io.jsonwebtoken:jjwt-jackson:0.13.0'
+    testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
 
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
     runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
@@ -39,6 +41,13 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-opentelemetry-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-validation-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    // Source: https://mvnrepository.com/artifact/com.redis.testcontainers/testcontainers-redis
+    testImplementation 'com.redis.testcontainers:testcontainers-redis:1.6.4'
+    // Source: https://mvnrepository.com/artifact/org.testcontainers/testcontainers-junit-jupiter
+    testImplementation 'org.testcontainers:testcontainers-junit-jupiter:2.0.5'
+
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
