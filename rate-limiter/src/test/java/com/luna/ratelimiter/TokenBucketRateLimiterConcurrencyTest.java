@@ -57,31 +57,33 @@ public class TokenBucketRateLimiterConcurrencyTest {
         AtomicInteger allowed = new AtomicInteger();
         AtomicInteger denied = new AtomicInteger();
 
-        ExecutorService pool = Executors.newFixedThreadPool(threads);
-        CountDownLatch start = new CountDownLatch(1);
-        CountDownLatch done = new CountDownLatch(totalRequests);
+        boolean finished;
+        try (ExecutorService pool = Executors.newFixedThreadPool(threads);) {
+            CountDownLatch start = new CountDownLatch(1);
+            CountDownLatch done = new CountDownLatch(totalRequests);
 
-        for (int i = 0; i < totalRequests; i++) {
-            pool.submit(() -> {
-                try {
-                    start.await(); // align all threads to a starting line
-                    var result = limiter.tryConsume("test:concurrent", tier);
-                    if (result.allowed()) {
-                        allowed.incrementAndGet();
-                    } else {
-                        denied.incrementAndGet();
+            for (int i = 0; i < totalRequests; i++) {
+                pool.submit(() -> {
+                    try {
+                        start.await(); // align all threads to a starting line
+                        var result = limiter.tryConsume("test:concurrent", tier);
+                        if (result.allowed()) {
+                            allowed.incrementAndGet();
+                        } else {
+                            denied.incrementAndGet();
+                        }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    } finally {
+                        done.countDown();
                     }
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                } finally {
-                    done.countDown();
-                }
-            });
-        }
+                });
+            }
 
-        start.countDown();
-        boolean finished = done.await(30, TimeUnit.SECONDS);
-        pool.shutdownNow();
+            start.countDown();
+            finished = done.await(30, TimeUnit.SECONDS);
+            pool.shutdownNow();
+        }
 
         assertThat(finished).as("all requests must complete in time").isTrue();
         assertThat(allowed.get() + denied.get()).isEqualTo(totalRequests);
